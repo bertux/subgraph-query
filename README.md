@@ -1,1 +1,6 @@
-# subgraph-query
+# Subgraph query
+
+```
+yarn
+yarn start
+```
