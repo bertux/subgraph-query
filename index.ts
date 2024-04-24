@@ -2,16 +2,10 @@
 import {ApolloClient, InMemoryCache, gql} from '@apollo/client';
 
 // Step 2:  Define your Query
-export const SWAP_QUERY = `
-  query info {
-    swaps(first: 1, where: {origin: "0x568ba215891517462E6BEbAdAe41efa03fccbaC9"}) {
-      origin
-    }
-  }
-`;
+export const NGP_QUERY = `query info($address: Bytes) {   noGasPasses(where: {creator: $address}) {     id   } }`;
 
 // Step 3: Set your Endpoint
-const endpoint = 'https://subgraph-test.arthera.net/subgraphs/name/cryptoalgebra/algebra';
+const endpoint = 'https://subgraph.arthera.net/subgraphs/name/arthera/subscribers';
 
 // Step 4: Create an ApolloClient
 const client = new ApolloClient({
@@ -21,9 +15,11 @@ const client = new ApolloClient({
 
 async function executeQuery() {
 // Step 5: Execute the Query
-  let response = await client.query({ query: gql(SWAP_QUERY) });
+  let response = await client.query({ query: gql(NGP_QUERY), variables: { address: '0x476E2651BF97dE8a26e4A05a9c8e00A6EFa1390c' } });
 // Step 6:  Print the Result
-  console.log(response?.data?.swaps?.length)
+  const data = response?.data;
+  const value = function (data) { if (data?.noGasPasses?.length > 0) { return 1; } return 0; }(data);
+  console.log(value);
 }
 
 executeQuery();
