@@ -10,8 +10,8 @@ function getThisWeekStartTimestamp(): number {
   // Adjust to the beginning of the week (Sunday by default)
   const startOfWeek: Moment = today.startOf('week');
 
-  // Get the timestamp in milliseconds since epoch (Unix timestamp)
-  const timestamp: number = startOfWeek.valueOf()/1000+24*3600;
+  // Get the timestamp in seconds since epoch (Unix timestamp) for Wednesday
+  const timestamp: number = (startOfWeek.valueOf()/1000)+(3*24*3600);
 
   return timestamp;
 }
