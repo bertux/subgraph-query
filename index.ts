@@ -10,14 +10,18 @@ function getThisWeekStartTimestamp(): number {
   // Adjust to the beginning of the week (Sunday by default)
   const startOfWeek: Moment = today.startOf('week');
 
-  // Get the timestamp in seconds since epoch (Unix timestamp) for Wednesday
-  const timestamp: number = (startOfWeek.valueOf()/1000)+(3*24*3600);
+  // Get the timestamp in seconds since epoch (Unix timestamp)
+  // const timestamp: number = (startOfWeek.valueOf()/1000)+(3*24*3600);
+  const timestamp: number = startOfWeek.valueOf() / 1000;
 
   return timestamp;
 }
 
-const timestamp_lt = getThisWeekStartTimestamp();
-console.log('Timestamp of the first day of this week:', timestamp_lt);
+const timestamp = getThisWeekStartTimestamp();
+const timestamp_gt = timestamp + (3 * 24 * 3600);
+const timestamp_lt = timestamp - (12 * 3600);
+console.log('Timestamp of middle of this lottery week:', timestamp_lt);
+console.log('Timestamp of end of this lottery week:', timestamp_gt);
 
 export const BLOCK_QUERY = `
   query MyQuery($timestamp_gte: BigInt, $timestamp_lt: BigInt) {
@@ -45,10 +49,13 @@ async function executeQuery() {
 // Step 5: Execute the Query
   let response = await client.query({ query: gql(BLOCK_QUERY), variables: { timestamp_gte: timestamp_lt-10, timestamp_lt: timestamp_lt } });
   const number = response?.data?.blocks[0]?.number;
+  response = await client.query({ query: gql(BLOCK_QUERY), variables: { timestamp_gte: timestamp_lt-10, timestamp_lt: timestamp_gt } });
+  const number2 = response?.data?.blocks[0]?.number;
 // Step 6:  Print the Result
   try {
-    console.log('Block number:', number);
-    await writeFile('subgraph-data.txt', number);
+    console.log('Block number of middle of this lottery week:', number);
+    console.log('Block number of end of this lottery week:', number2);
+    await writeFile('subgraph-data.txt', number + '-' + number2);
   } catch (error) {
     console.error('Error writing to file:', error);
   }
